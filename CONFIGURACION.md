@@ -102,6 +102,26 @@ Ahora deberás completar un formulario para verificar tu elegibilidad:
 
 > ⚠️ **Importante**: Realiza este registro **antes del inicio del curso** para evitar retrasos.
 
+### 2.5. Habilitar Earth Engine para tu Proyecto
+
+Una vez aprobado el registro, **debes habilitar Earth Engine específicamente para tu proyecto**:
+
+1. Ve a la siguiente URL, **reemplazando `tu-proyecto-id` con el ID de tu proyecto**:
+   ```
+   https://code.earthengine.google.com/register?project=tu-proyecto-id
+   ```
+   
+   Por ejemplo, si tu proyecto se llama `cursocsic2025`:
+   ```
+   https://code.earthengine.google.com/register?project=cursocsic2025
+   ```
+
+2. Confirma que quieres registrar Earth Engine para ese proyecto
+
+3. Espera la confirmación (generalmente es instantáneo si ya aprobaron tu registro)
+
+> 💡 **Nota**: Puedes encontrar el ID de tu proyecto en Google Cloud Console, en la parte superior de la página.
+
 ---
 
 ## 3. Verificar el Acceso a Earth Engine
@@ -167,8 +187,9 @@ print('Acceso correcto a Earth Engine!')
 Antes de comenzar el curso, asegúrate de tener:
 
 - ✅ Cuenta de Google activa
-- ✅ Proyecto de Google Cloud creado
+- ✅ Proyecto de Google Cloud creado (anota el ID del proyecto)
 - ✅ Registro en Earth Engine completado y aprobado
+- ✅ Earth Engine habilitado para tu proyecto específico (usando la URL con tu proyecto)
 - ✅ Acceso verificado al Code Editor
 - ✅ (Opcional) Python 3.x instalado para los días de Python
 
