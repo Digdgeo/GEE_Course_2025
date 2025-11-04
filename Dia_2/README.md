@@ -1,206 +1,354 @@
-# Día 2 - Índices Espectrales, DEM y Nuevos Datasets
+# Día 2 - Índices Espectrales y Estadísticas Zonales
 
-## 🎯 Objetivos del Día
-- Completar los contenidos pendientes del Día 1
-- Calcular índices espectrales (NDVI, MNDWI, SAVI)
-- Trabajar con Modelos Digitales de Elevación (DEM)
-- Realizar estadísticas zonales avanzadas
-- Explorar datos radar para tráfico marítimo
-- Analizar datos de luminosidad nocturna
+## 🎯 Resumen de la Sesión
+
+En el segundo día del curso consolidamos conceptos fundamentales del Día 1 y avanzamos en dos áreas clave:
+- **Cálculo de índices espectrales** con imágenes Landsat 8
+- **Estadísticas zonales** cruzando datos raster con vectoriales
+
+## 🛰️ Introducción a la Teledetección
+
+Antes de trabajar con los scripts, vimos una introducción a los conceptos fundamentales de la teledetección que son esenciales para entender cómo funcionan los índices espectrales.
+
+### Conceptos Básicos
+
+**Teledetección** es la técnica de obtener información sobre objetos o áreas desde la distancia, típicamente desde satélites o aviones, sin contacto físico directo.
+
+### El Espectro Electromagnético
+
+La teledetección se basa en la medición de la **radiación electromagnética** que los objetos reflejan o emiten. Diferentes materiales interactúan de manera única con diferentes longitudes de onda:
+
+- **Luz Visible** (400-700 nm): Lo que ve el ojo humano
+  - Azul: ~450-495 nm
+  - Verde: ~495-570 nm
+  - Rojo: ~620-750 nm
+  
+- **Infrarrojo Cercano (NIR)** (~700-1400 nm): Clave para detectar vegetación saludable
+  
+- **Infrarrojo de Onda Corta (SWIR)** (~1400-3000 nm): Útil para detectar agua y humedad
+
+- **Infrarrojo Térmico** (~8000-14000 nm): Mide temperatura
+
+### Bandas Espectrales en Satélites
+
+Los satélites capturan imágenes en diferentes **bandas espectrales** (rangos específicos de longitudes de onda). Esto permite analizar cómo diferentes materiales reflejan la luz:
+
+![Comparación de bandas Landsat y Sentinel-2](../images/dmidS2LS7Comparison.png)
+*Comparación de las bandas espectrales de Landsat 7, Landsat 8 y Sentinel-2*
+
+#### Landsat 8 (Usado en este curso)
+
+| Banda | Nombre | Longitud de onda | Resolución | Uso principal |
+|-------|--------|------------------|------------|---------------|
+| B1 | Coastal Aerosol | 430-450 nm | 30 m | Estudios costeros |
+| B2 | Blue | 450-510 nm | 30 m | Agua, suelo |
+| B3 | Green | 530-590 nm | 30 m | Vegetación |
+| B4 | Red | 640-670 nm | 30 m | Vegetación |
+| B5 | NIR | 850-880 nm | 30 m | Biomasa, vegetación |
+| B6 | SWIR 1 | 1570-1650 nm | 30 m | Humedad, agua |
+| B7 | SWIR 2 | 2110-2290 nm | 30 m | Geología, suelos |
+| B10-11 | Thermal | 10600-12510 nm | 100 m | Temperatura |
+
+### ¿Por Qué Usamos Diferentes Bandas?
+
+Cada material tiene una **firma espectral** única (patrón de reflexión):
+
+- **Vegetación saludable**: 
+  - Absorbe rojo (fotosíntesis)
+  - Refleja mucho NIR (estructura celular)
+  - Por eso el NDVI = (NIR - Red) / (NIR + Red) funciona
+
+- **Agua**:
+  - Absorbe NIR y SWIR
+  - Refleja más en verde
+  - Por eso el MNDWI = (Green - SWIR) / (Green + SWIR) detecta agua
+
+- **Suelo desnudo**:
+  - Refleja uniformemente en visible
+  - Menos reflexión en NIR que vegetación
+
+### Diferencias Landsat vs Sentinel-2
+
+| Característica | Landsat 8 | Sentinel-2 |
+|----------------|-----------|------------|
+| Resolución espacial | 30 m (óptico) | 10-20 m |
+| Resolución temporal | 16 días | 5 días |
+| Bandas espectrales | 11 bandas | 13 bandas |
+| Disponibilidad | Desde 1972 (programa) | Desde 2015 |
+| Cobertura | Global | Global |
+| Acceso | Gratuito | Gratuito |
+
+**En este curso usamos principalmente Landsat 8** por su amplio historial de datos y consistencia temporal.
+
+### Aplicaciones de la Teledetección
+
+- 🌱 **Agricultura**: Monitoreo de cultivos, estimación de rendimientos
+- 🌳 **Bosques**: Detección de deforestación, salud forestal
+- 💧 **Agua**: Calidad del agua, detección de cuerpos de agua
+- 🏙️ **Urbano**: Crecimiento urbano, planificación territorial
+- 🌋 **Desastres**: Incendios, inundaciones, erupciones volcánicas
+- ❄️ **Clima**: Glaciares, nieve, cambio climático
+
+### Relación con los Índices Espectrales
+
+Los **índices espectrales** que calculamos en este día (NDVI, MNDWI, SAVI) son fórmulas matemáticas que combinan diferentes bandas para resaltar características específicas:
+
+- Aprovechan las diferencias en reflexión entre bandas
+- Normalizan los valores para comparabilidad
+- Reducen efectos atmosféricos y de iluminación
+- Facilitan la interpretación y clasificación
 
 ---
 
-## 📝 Contenidos Planificados
+## 📚 Contenidos Trabajados
 
-### Scripts Pendientes del Día 1
-
-Los siguientes scripts no se cubrieron en la primera sesión y se trabajarán hoy:
-
-#### Script 6: Cálculo de Índices Espectrales
+### Script 6: Cálculo de Índices Espectrales
 **Archivo:** `06_ndvi_image.js`
 
-**Aprenderemos:**
-- Cargar imágenes Landsat 8 (Collection 2)
-- Convertir Digital Numbers a reflectancia de superficie
-- Calcular NDVI (Normalized Difference Vegetation Index)
-- Calcular MNDWI (Modified Normalized Difference Water Index)
-- Calcular SAVI (Soil Adjusted Vegetation Index)
-- Aplicar máscaras basadas en valores
-- Clasificar índices por umbrales
-- Usar paletas de color para visualización
+#### Temas Cubiertos
 
----
+**1. Trabajo con Imágenes Landsat 8**
+- Carga de imágenes Landsat 8 Collection 2 (Surface Reflectance)
+- Conversión de Digital Numbers a reflectancia de superficie
+- Aplicación de factores de escala: `(DN × 0.0000275) - 0.2`
+- Renombrado de bandas con nombres descriptivos
 
-#### Script 7: Modelo Digital de Elevación (DEM)
+**2. Cálculo de Índices Espectrales**
+
+Aprendimos **tres métodos diferentes** para calcular el NDVI:
+
+```javascript
+// Método 1: Cálculo manual
+var ndvi_1 = b5.subtract(b4).divide(b5.add(b4));
+
+// Método 2: Función normalizada (más eficiente)
+var ndvi_2 = composite.normalizedDifference(["Nir", "Red"]);
+
+// Método 3: Usando expresiones (útil para fórmulas complejas)
+var ndvi_3 = composite.expression(
+  "(b5 - b4) / (b5 + b4)", 
+  {b5: composite.select("Nir"), b4: composite.select("Red")}
+);
+```
+
+**Índices Trabajados:**
+- **NDVI** (Normalized Difference Vegetation Index): `(NIR - Red) / (NIR + Red)`
+- **MNDWI** (Modified Normalized Difference Water Index): `(Green - SWIR) / (Green + SWIR)`
+- **SAVI** (Soil-Adjusted Vegetation Index): `1.5 × ((NIR - Red) / (NIR + Red + 0.5))`
+
+**3. Trabajo con Máscaras**
+- Aplicar máscaras basadas en valores (`updateMask()`)
+- Crear máscaras para mostrar solo agua (MNDWI >= 0)
+- Clasificación por umbrales usando `.where()`
+
+**4. Clasificación de Índices**
+```javascript
+var ndvi_classes = ndvi_1.updateMask(ndvi_1.mask())
+  .where(ndvi_1.lt(0.2), 1)                      // Vegetación escasa
+  .where(ndvi_1.gte(0.2).and(ndvi_1.lt(0.5)), 2) // Vegetación moderada
+  .where(ndvi_1.gte(0.5), 3);                    // Vegetación densa
+```
+
+**5. Visualización con Paletas de Color**
+- Configuración de parámetros de visualización (`min`, `max`, `palette`)
+- Uso de diferentes esquemas de color para distintos índices
+
+### Script 7: Modelo Digital de Elevación (DEM)
 **Archivo:** `07_srtm_munis.js`
 
-**Aprenderemos:**
-- Cargar el dataset SRTM (elevación global)
-- Derivar productos topográficos:
-  - Pendiente (slope)
-  - Aspecto (aspect)
-- Crear imágenes multi-banda
-- Calcular estadísticas zonales con `reduceRegion()`
-- Calcular estadísticas zonales múltiples con `reduceRegions()`
-- Diferentes reductores: mean, median, max, min, etc.
-- Exportar resultados a CSV
+#### Temas Cubiertos
 
----
+**1. Trabajo con SRTM**
+- Carga del dataset SRTM (Shuttle Radar Topography Mission)
+- Resolución: 90 metros
+- Dataset global de elevación
 
-#### Script 8: Combinando DEM y Datos Espectrales
-**Archivo:** `08_srtm_ndvi_mask.js`
+**2. Derivación de Productos Topográficos**
+```javascript
+var elevation = dataset.select('elevation');
+var slope = ee.Terrain.slope(elevation);     // Pendiente en grados
+var aspect = ee.Terrain.aspect(elevation);   // Orientación de la pendiente
+```
 
-**Aprenderemos:**
-- Filtrar colecciones Landsat por fecha, ubicación y path/row
-- Analizar nubosidad en colecciones
-- Crear composiciones temporales (máximo, media, mediana)
-- Combinar datos topográficos y espectrales
-- Aplicar máscaras múltiples (elevación, NDVI, combinadas)
-- Operadores lógicos en imágenes: `and()`, `or()`, `not()`
-- Crear clasificaciones basadas en múltiples criterios
+**3. Creación de Imágenes Multi-banda**
+```javascript
+var full = ee.Image.cat([elevation, slope, aspect]);
+```
 
----
+**4. Estadísticas Zonales - Conceptos Clave**
 
-#### Script 9: Estadísticas Zonales Avanzadas
-**Archivo:** `09_zonal_stats_dem_ndvi.js`
+**`reduceRegion()`** - Para UNA geometría:
+```javascript
+var roiStats = full.reduceRegion({
+  reducer: ee.Reducer.max(),
+  geometry: roi,
+  scale: 90,
+  maxPixels: 1e9
+});
+```
 
-**Aprenderemos:**
-- Calcular valores máximos/mínimos temporales
-- Crear zonas (categorías) usando `where()`
-- Reductores agrupados con `.group()`
-- Calcular histogramas por zona
-- Análisis cruzado de variables (elevación × NDVI)
-- Calcular áreas con `ee.Image.pixelArea()`
-- Convertir imágenes clasificadas a vectores
-- Exportar imágenes y tablas
+**`reduceRegions()`** - Para MÚLTIPLES geometrías:
+```javascript
+var selStats = full.reduceRegions({
+  collection: munis.select(['nombre']),
+  reducer: ee.Reducer.mean(),
+  scale: 30
+});
+```
 
----
+**5. Reductores Trabajados**
+- `ee.Reducer.mean()` - Media
+- `ee.Reducer.median()` - Mediana
+- `ee.Reducer.max()` - Máximo
+- `ee.Reducer.min()` - Mínimo
 
-### 🆕 Nuevos Contenidos del Día 2
+**6. Cruce de Raster con Vectorial**
+- Filtrado de features con `ee.Filter`
+- Cálculo de estadísticas por municipio
+- Mantener propiedades originales en los resultados
 
-#### Datos Radar: Tráfico Marítimo
-**Dataset:** Sentinel-1 SAR o similares
+**7. Visualización de Vectores**
+```javascript
+// Método 1: paint()
+var outline = empty.paint({
+  featureCollection: andalucia,
+  width: 2
+});
 
-**Exploraremos:**
-- Introducción a datos de radar (SAR)
-- Diferencias entre datos ópticos y radar
-- Ventajas del radar (nubes, noche)
-- Aplicaciones para monitoreo marítimo
-- Detección de embarcaciones
-- Análisis de tráfico marítimo
-- Visualización de datos radar
+// Método 2: draw()
+andalucia.draw({color: '006600', strokeWidth: 5})
+```
 
-**Posibles aplicaciones:**
-- Seguimiento de rutas marítimas
-- Identificación de zonas de pesca
-- Monitoreo de puertos
-- Detección de anomalías
+**8. Exportación de Resultados**
+```javascript
+Export.table.toDrive({
+  collection: selStats,
+  description: 'Estadisticas_Topografia_Municipios',
+  folder: 'GEE_Curso_2025',
+  fileFormat: 'CSV'
+});
+```
 
----
+## 🔑 Conceptos Clave Aprendidos
 
-#### Datos de Luminosidad Nocturna
-**Dataset:** VIIRS Nighttime Day/Night Band o DMSP-OLS
+### Índices Espectrales
 
-**Exploraremos:**
-- Fuentes de datos de luminosidad nocturna
-- Aplicaciones de los datos nocturnos
-- Análisis de desarrollo urbano
-- Seguimiento de actividad económica
-- Comparaciones temporales
-- Identificación de cambios en iluminación
-- Detección de eventos (apagones, crecimiento urbano)
+| Índice | Fórmula | Rango | Interpretación |
+|--------|---------|-------|----------------|
+| **NDVI** | (NIR - Red) / (NIR + Red) | -1 a 1 | < 0: Agua<br>0-0.2: Suelo desnudo<br>0.2-0.5: Vegetación dispersa<br>> 0.5: Vegetación densa |
+| **MNDWI** | (Green - SWIR) / (Green + SWIR) | -1 a 1 | > 0: Agua |
+| **SAVI** | 1.5 × ((NIR - Red) / (NIR + Red + 0.5)) | Similar a NDVI | Ajustado para áreas con suelo expuesto |
 
-**Posibles aplicaciones:**
-- Mapeo de expansión urbana
-- Estudios de desarrollo económico
-- Análisis de consumo energético
-- Detección de asentamientos informales
-- Impacto de conflictos o desastres
+### Diferencias Importantes
 
----
+**`reduceRegion()` vs `reduceRegions()`**
 
-## 🔗 Recursos del Día
+| Función | Entrada | Salida | Uso |
+|---------|---------|--------|-----|
+| `reduceRegion()` | 1 geometría | Dictionary | Estadísticas de un área |
+| `reduceRegions()` | FeatureCollection | FeatureCollection | Estadísticas de múltiples áreas |
+
+### Parámetros Críticos
+
+- **`scale`**: Resolución del análisis en metros (crucial para resultados correctos)
+- **`maxPixels`**: Límite de píxeles a procesar (aumentar para áreas grandes)
+- **`geometry`/`collection`**: Define el área de análisis
+
+## 💡 Técnicas Aprendidas
+
+1. **Tres formas de calcular índices** (manual, funciones, expresiones)
+2. **Aplicar máscaras** para filtrar píxeles por criterios
+3. **Clasificar valores** usando `.where()` con operadores lógicos
+4. **Combinar bandas** en imágenes multi-banda
+5. **Calcular estadísticas zonales** sobre geometrías
+6. **Exportar resultados** a CSV en Google Drive
+7. **Visualizar vectores** con `paint()` y `draw()`
+
+## ✅ Ejercicios Realizables
+
+### Nivel Básico
+- [ ] Calcular el NDVI de una imagen Landsat de tu región
+- [ ] Crear una máscara para mostrar solo vegetación (NDVI > 0.4)
+- [ ] Calcular la elevación media de un área de interés
+
+### Nivel Intermedio
+- [ ] Clasificar una imagen en 4 categorías según NDVI
+- [ ] Calcular estadísticas de elevación para varios municipios
+- [ ] Crear un mapa que combine NDVI y MNDWI para diferenciar vegetación y agua
+
+### Nivel Avanzado
+- [ ] Calcular el área de cada categoría de NDVI
+- [ ] Encontrar el municipio con mayor pendiente media
+- [ ] Exportar estadísticas topográficas de toda una provincia
+
+## 📚 Recursos de Referencia
 
 ### Documentación Oficial
-- [Image Collections](https://developers.google.com/earth-engine/guides/ic_filtering)
+- [Image Collections](https://developers.google.com/earth-engine/guides/ic_creating)
 - [Reducers](https://developers.google.com/earth-engine/guides/reducers_intro)
 - [Masking](https://developers.google.com/earth-engine/guides/image_mask)
 - [Exporting Data](https://developers.google.com/earth-engine/guides/exporting)
 
-### Datasets
+### Datasets Utilizados
 - [Landsat 8 Collection 2 Surface Reflectance](https://developers.google.com/earth-engine/datasets/catalog/LANDSAT_LC08_C02_T1_L2)
-- [SRTM Digital Elevation Data](https://developers.google.com/earth-engine/datasets/catalog/USGS_SRTMGL1_003)
-- [Sentinel-1 SAR](https://developers.google.com/earth-engine/datasets/catalog/COPERNICUS_S1_GRD)
-- [VIIRS Nighttime Lights](https://developers.google.com/earth-engine/datasets/catalog/NOAA_VIIRS_DNB_MONTHLY_V1_VCMSLCFG)
+- [SRTM Digital Elevation Data](https://developers.google.com/earth-engine/datasets/catalog/CGIAR_SRTM90_V4)
 
----
-
-## 📌 Recordatorios Importantes
-
-### Antes de Empezar
-- ✅ Verifica que estás usando la misma cuenta de Google en Cloud Console y Code Editor
-- ✅ Confirma que Earth Engine API está habilitada en tu proyecto
-- ✅ Repasa los conceptos del Día 1 (especialmente client vs server)
-
-### Conceptos Clave para Hoy
-- **Reducers:** Herramientas para calcular estadísticas sobre regiones
-- **Scale:** Define la resolución del análisis (muy importante para resultados correctos)
-- **Máscaras:** Filtran píxeles basándose en criterios
-- **Composiciones temporales:** Combinan múltiples imágenes en una sola
-- **Datos SAR:** Funcionan con microondas, no dependen de luz solar
-
----
-
-## ✅ Ejercicios Sugeridos
-
-Si terminamos antes de tiempo o para practicar en casa:
-
-### Nivel Básico
-1. Calcula el NDVI medio de tu región para el último mes
-2. Identifica las zonas con mayor elevación en tu área de estudio
-3. Visualiza la luminosidad nocturna de tu ciudad
-
-### Nivel Intermedio
-4. Crea un mapa que muestre solo vegetación en zonas de baja pendiente
-5. Compara la luminosidad nocturna de dos años diferentes
-6. Identifica cambios en el tráfico marítimo entre dos períodos
-
-### Nivel Avanzado
-7. Calcula estadísticas de NDVI por rangos de elevación
-8. Analiza la correlación entre luminosidad nocturna y densidad de población
-9. Detecta patrones temporales en el tráfico marítimo
-
----
-
-## 🎓 Para Profundizar en Casa
+## 🎓 Para Profundizar
 
 ### Sobre Índices Espectrales
-- ¿Qué mide exactamente el NDVI y por qué es útil?
-- ¿Cuándo usar SAVI en lugar de NDVI?
-- ¿Para qué sirve el MNDWI?
+- ¿Por qué el NDVI usa NIR y Red? (relación con fotosíntesis y estructura celular)
+- ¿Cuándo es mejor usar SAVI en lugar de NDVI? (vegetación dispersa, suelo expuesto)
+- ¿Qué otros índices existen? (EVI, NDBI, NDSI, etc.)
 
-### Sobre DEM y Topografía
-- ¿Qué es SRTM y cuál es su resolución?
-- ¿Cómo se calcula la pendiente a partir de elevación?
-- ¿Qué aplicaciones tienen los datos de aspecto?
+### Sobre Estadísticas Zonales
+- ¿Cómo afecta el parámetro `scale` a los resultados?
+- ¿Qué otros reductores están disponibles? (percentiles, histogramas, etc.)
+- ¿Cómo combinar múltiples reductores en una sola operación?
 
-### Sobre Nuevos Datasets
-- ¿Cómo funciona el radar SAR?
-- ¿Qué ventajas tiene sobre datos ópticos?
-- ¿Cómo se capturan los datos de luminosidad nocturna?
+### Sobre Topografía
+- ¿Para qué se usa el aspecto (orientation)?
+- ¿Cómo crear un hillshade para visualización?
+- ¿Qué es el dataset ALOS PALSAR y cuándo usarlo?
 
----
+## 🔄 Contenidos Pendientes para Próximas Sesiones
 
-## 🎯 Preparación para el Día 3
+Los siguientes temas estaban planificados para el Día 2 pero no se cubrieron:
 
-El próximo día probablemente trabajaremos con:
-- Series temporales y análisis de cambios
+- Script 8: Combinando DEM y datos espectrales
+- Script 9: Estadísticas zonales avanzadas (histogramas, grupos)
+- Datos radar (SAR) para tráfico marítimo
+- Datos de luminosidad nocturna (VIIRS)
+- Composiciones temporales (máximo, media, mediana)
+- Análisis de series temporales
+
+Estos temas probablemente se verán en sesiones futuras.
+
+## 💡 Consejos Prácticos
+
+1. **Usa `.normalizedDifference()`** en lugar de cálculos manuales cuando sea posible
+2. **Ajusta el `scale`** según la resolución de tus datos (30m para Landsat, 90m para SRTM)
+3. **Combina reductores** para obtener múltiples estadísticas en una sola operación
+4. **Verifica las propiedades** de tus FeatureCollections antes de hacer reduceRegions
+5. **Usa `false` en Map.addLayer** para capas de referencia que no necesitas ver siempre
+
+## 🎯 Preparación para la Próxima Sesión
+
+Es probable que en la siguiente sesión se trabaje con:
+- Series temporales de imágenes
+- Composiciones y reducción temporal
+- Análisis de cambios
 - Clasificación de imágenes
-- Exportación de resultados
-- Proyectos personalizados
+- Proyectos más complejos combinando múltiples técnicas
 
 ---
 
-## 🎉 ¡Sigamos aprendiendo!
+## 📌 Notas Importantes
 
-Hoy cubriremos mucho contenido. No te preocupes si no entiendes todo a la primera - lo importante es practicar y experimentar. Los scripts estarán disponibles para que sigas practicando después de clase.
+- Los scripts requieren tener dibujado un ROI o tener cargado un FeatureCollection de municipios
+- Para ejecutar las exportaciones, hay que ir a la pestaña "Tasks" y hacer clic en "Run"
+- Los tres métodos de calcular NDVI producen el mismo resultado, pero tienen diferentes aplicaciones según la complejidad de la fórmula
+- Siempre verifica que el `scale` corresponda con la resolución de tus datos
+
+---
+
+*README actualizado después de la sesión del Día 2*
