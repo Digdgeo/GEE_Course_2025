@@ -1,8 +1,7 @@
 # Día 3 - Colecciones de Imágenes en Google Earth Engine
 
 ## 🎯 Objetivos del Día
-
-En este tercer día del curso avanzamos hacia el trabajo con **colecciones de imágenes**, uno de los conceptos más potentes de Google Earth Engine:
+En este tercer día del curso avanzamos hacia el trabajo con colecciones de imágenes, uno de los conceptos más potentes de Google Earth Engine:
 
 - Entender qué son las ImageCollections
 - Aprender a filtrar colecciones por fecha, ubicación y propiedades
@@ -13,10 +12,9 @@ En este tercer día del curso avanzamos hacia el trabajo con **colecciones de im
 ## 📚 Introducción a las Colecciones de Imágenes
 
 ### ¿Qué es una ImageCollection?
+Hasta ahora hemos trabajado con imágenes individuales (ee.Image). En la práctica real, necesitamos trabajar con múltiples imágenes de la misma área tomadas en diferentes momentos.
 
-Hasta ahora hemos trabajado con imágenes individuales (`ee.Image`). En la práctica real, necesitamos trabajar con **múltiples imágenes** de la misma área tomadas en diferentes momentos.
-
-Una **ImageCollection** es:
+Una ImageCollection es:
 - Un conjunto de imágenes del mismo sensor/producto
 - Organizadas cronológicamente
 - Con metadatos asociados (fecha, nubosidad, órbita, etc.)
@@ -31,7 +29,6 @@ var coleccion = ee.ImageCollection("LANDSAT/LC08/C02/T1_L2");
 ```
 
 ### ¿Por Qué Usar Colecciones?
-
 🔹 **Análisis temporal**: Ver cómo cambia un área a lo largo del tiempo  
 🔹 **Reducción de nubes**: Combinar múltiples imágenes para eliminar nubes  
 🔹 **Composiciones**: Crear mosaicos sin costuras de áreas grandes  
@@ -42,16 +39,15 @@ var coleccion = ee.ImageCollection("LANDSAT/LC08/C02/T1_L2");
 
 | Concepto | ee.Image | ee.ImageCollection |
 |----------|----------|-------------------|
-| **Definición** | Una imagen única | Conjunto de imágenes |
-| **Dimensiones** | 2D espacial + bandas | 3D (espacio + tiempo + bandas) |
-| **Ejemplo** | Foto de un día | Archivo de fotos de un año |
-| **Uso típico** | Análisis puntual | Análisis temporal |
-| **Visualización** | Directa con Map.addLayer | Requiere reducción primero |
+| Definición | Una imagen única | Conjunto de imágenes |
+| Dimensiones | 2D espacial + bandas | 3D (espacio + tiempo + bandas) |
+| Ejemplo | Foto de un día | Archivo de fotos de un año |
+| Uso típico | Análisis puntual | Análisis temporal |
+| Visualización | Directa con Map.addLayer | Requiere reducción primero |
 
 ## 🔍 Conceptos Fundamentales
 
 ### 1. Catálogo de Datasets
-
 Google Earth Engine tiene cientos de colecciones públicas:
 
 **Datos Ópticos:**
@@ -71,11 +67,9 @@ Google Earth Engine tiene cientos de colecciones públicas:
 - Temperatura superficial: `MODIS/006/MOD11A1`
 
 ### 2. Filtrado de Colecciones
-
-Las colecciones suelen contener miles o millones de imágenes. Necesitamos **filtrar** para obtener solo las que nos interesan:
+Las colecciones suelen contener miles o millones de imágenes. Necesitamos filtrar para obtener solo las que nos interesan:
 
 #### a) Filtrado Espacial
-
 ```javascript
 // Filtrar por geometría
 var coleccion = ee.ImageCollection("LANDSAT/LC08/C02/T1_L2")
@@ -87,7 +81,6 @@ var coleccion = ee.ImageCollection("LANDSAT/LC08/C02/T1_L2")
 ```
 
 #### b) Filtrado Temporal
-
 ```javascript
 // Filtrar por rango de fechas
 var coleccion = ee.ImageCollection("LANDSAT/LC08/C02/T1_L2")
@@ -103,7 +96,6 @@ var coleccion = ee.ImageCollection("LANDSAT/LC08/C02/T1_L2")
 ```
 
 #### c) Filtrado por Propiedades
-
 ```javascript
 // Filtrar por nubosidad
 var coleccion = ee.ImageCollection("LANDSAT/LC08/C02/T1_L2")
@@ -116,7 +108,6 @@ var coleccion = ee.ImageCollection("LANDSAT/LC08/C02/T1_L2")
 ```
 
 #### d) Combinando Filtros
-
 ```javascript
 // Filtrado completo
 var coleccion = ee.ImageCollection("LANDSAT/LC08/C02/T1_L2")
@@ -128,11 +119,9 @@ print('Imágenes en la colección:', coleccion.size());
 ```
 
 ### 3. Reducción Temporal
-
-Para **visualizar** o **analizar** una colección, normalmente la reducimos a una sola imagen:
+Para visualizar o analizar una colección, normalmente la reducimos a una sola imagen:
 
 #### Métodos Comunes de Reducción
-
 ```javascript
 // MEDIANA - Elimina outliers, bueno para eliminar nubes
 var mediana = coleccion.median();
@@ -154,14 +143,13 @@ var mosaico = coleccion.mosaic();
 
 | Método | Cuándo Usarlo | Ventaja |
 |--------|---------------|---------|
-| **median()** | Eliminar nubes, outliers | Robusto a valores extremos |
-| **mean()** | Promedios, condiciones típicas | Suaviza variaciones |
-| **max()** | Pico de vegetación, NDVI máximo | Captura el mejor escenario |
-| **min()** | Cuerpos de agua, NDVI mínimo | Condiciones mínimas |
-| **mosaic()** | Crear mosaico sin costuras | Imagen "limpia" si hay máscaras |
+| `median()` | Eliminar nubes, outliers | Robusto a valores extremos |
+| `mean()` | Promedios, condiciones típicas | Suaviza variaciones |
+| `max()` | Pico de vegetación, NDVI máximo | Captura el mejor escenario |
+| `min()` | Cuerpos de agua, NDVI mínimo | Condiciones mínimas |
+| `mosaic()` | Crear mosaico sin costuras | Imagen "limpia" si hay máscaras |
 
 ### 4. Visualización de Colecciones
-
 ```javascript
 // ❌ INCORRECTO - No se puede visualizar directamente
 Map.addLayer(coleccion, {}, 'Colección');  // Error!
@@ -174,7 +162,6 @@ Map.addLayer(compuesta, {bands: ['B4', 'B3', 'B2'], min: 0, max: 3000}, 'Mediana
 ### 5. Operaciones con Colecciones
 
 #### Mapear Funciones (Aplicar a Cada Imagen)
-
 ```javascript
 // Calcular NDVI para cada imagen de la colección
 function calcularNDVI(imagen) {
@@ -186,14 +173,12 @@ var coleccionConNDVI = coleccion.map(calcularNDVI);
 ```
 
 #### Seleccionar Bandas
-
 ```javascript
 // Seleccionar solo bandas específicas
 var coleccionRGB = coleccion.select(['B4', 'B3', 'B2']);
 ```
 
 #### Ordenar Colecciones
-
 ```javascript
 // Ordenar por fecha (más reciente primero)
 var ordenada = coleccion.sort('system:time_start', false);
@@ -203,7 +188,6 @@ var menosNubes = coleccion.sort('CLOUD_COVER');
 ```
 
 #### Obtener la Primera Imagen
-
 ```javascript
 // Obtener la imagen con menos nubes
 var mejorImagen = coleccion
@@ -212,7 +196,6 @@ var mejorImagen = coleccion
 ```
 
 ### 6. Información de Colecciones
-
 ```javascript
 // Número de imágenes
 print('Número de imágenes:', coleccion.size());
@@ -231,7 +214,6 @@ print('Última imagen:', coleccion.sort('system:time_start', false).first());
 ```
 
 ## 🔧 Flujo de Trabajo Típico
-
 ```javascript
 // 1. DEFINIR ÁREA Y PERIODO
 var roi = ee.Geometry.Point([-5.86, 36.88]).buffer(10000);
@@ -269,7 +251,6 @@ Map.addLayer(compuesta.select('NDVI'), {min: 0, max: 1, palette: ['brown', 'yell
 ## 💡 Conceptos Avanzados
 
 ### Series Temporales
-
 ```javascript
 // Crear un gráfico de NDVI a lo largo del tiempo
 var grafico = ui.Chart.image.series({
@@ -287,14 +268,12 @@ print(grafico);
 ```
 
 ### Composiciones por Calidad
-
 ```javascript
 // Crear composición usando píxeles de mejor calidad
 var compuesta = coleccion.qualityMosaic('NDVI');  // Usa píxeles con mayor NDVI
 ```
 
 ### Máscaras de Nubes
-
 ```javascript
 // Función para enmascarar nubes en Landsat 8
 function enmascararNubes(imagen) {
@@ -306,12 +285,11 @@ var sinNubes = coleccion.map(enmascararNubes);
 ```
 
 ## 🎯 Ventajas de las Colecciones en GEE
-
-1. **Procesamiento paralelo**: GEE procesa miles de imágenes simultáneamente
-2. **No necesitas descargar**: Todo el procesamiento ocurre en la nube
-3. **Acceso instantáneo**: Décadas de datos disponibles inmediatamente
-4. **Escalabilidad**: Análisis de áreas enormes sin preocuparte por el almacenamiento
-5. **Reproducibilidad**: Scripts compartibles que siempre usan los mismos datos
+- **Procesamiento paralelo**: GEE procesa miles de imágenes simultáneamente
+- **No necesitas descargar**: Todo el procesamiento ocurre en la nube
+- **Acceso instantáneo**: Décadas de datos disponibles inmediatamente
+- **Escalabilidad**: Análisis de áreas enormes sin preocuparte por el almacenamiento
+- **Reproducibilidad**: Scripts compartibles que siempre usan los mismos datos
 
 ## 📊 Casos de Uso Comunes
 
@@ -346,15 +324,126 @@ var periodo2 = coleccion.filterDate('2024-01-01', '2024-12-31').median();
 var cambio = periodo2.subtract(periodo1);
 ```
 
+---
+
 ## 📝 Contenidos Trabajados en Clase
 
-*Esta sección se actualizará después de la sesión con los scripts específicos trabajados*
+En esta sesión nos hemos enfocado en aplicar los conceptos de colecciones de imágenes a dos casos prácticos de **series temporales**:
 
-### Scripts del Día 3
+### 🎯 Conceptos Clave Aplicados
 
-**Script XX: [Título]**
-- Descripción de lo trabajado
-- Conceptos clave aplicados
+1. **Combinación de múltiples misiones Landsat** (5, 7, 8 y 9) en una sola serie temporal continua
+2. **Análisis temporal por períodos decadales** (1984-2024)
+3. **Métodos de reducción estadística**: mediana, máximo y percentil 95
+4. **Enmascaramiento** de valores para mostrar solo información relevante
+5. **Índices espectrales aplicados a series temporales**:
+   - **MNDWI** para detección de agua
+   - **NDVI** para análisis fenológico de vegetación
+
+### 📁 Scripts Desarrollados
+
+Los siguientes scripts están disponibles en la carpeta `scripts/dia-3/`:
+
+---
+
+#### **Script 1: Análisis Temporal de Agua con MNDWI**
+**Archivo**: `01_series_temporales_mndwi.js`
+
+**Descripción**:  
+Script para analizar la evolución temporal de cuerpos de agua utilizando el índice MNDWI (Modified Normalized Difference Water Index) en cuatro períodos decadales.
+
+**Características principales**:
+- ✅ Combinación de **4 colecciones Landsat** (L5, L7, L8, L9) en una serie temporal unificada
+- ✅ División en **4 períodos de 10 años** (1984-1994, 1994-2004, 2004-2014, 2014-2024)
+- ✅ Períodos hidrológicos: del **1 de septiembre al 31 de agosto**
+- ✅ **Aplicación de coeficientes de reflectancia** según documentación Landsat C02
+- ✅ Cálculo de MNDWI: `(Green - SWIR1) / (Green + SWIR1)`
+- ✅ **Selección de método estadístico** configurable: `median`, `max` o `percentile95`
+- ✅ **Enmascaramiento automático** para mostrar solo valores MNDWI > 0 (agua)
+- ✅ Código completamente **comentado y estructurado** para fines didácticos
+- ✅ Exportación a Earth Engine Assets
+
+**Conceptos trabajados**:
+- Normalización de bandas entre diferentes sensores
+- `.merge()` para combinar colecciones
+- `.map()` para aplicar funciones a cada imagen
+- Filtrado temporal con `.filterDate()`
+- Reducción estadística configurable
+- Máscaras con `.updateMask()`
+- Sistema de coordenadas y reproyección
+
+**Aplicación práctica**:  
+Monitoreo de cambios en extensión de embalses, lagunas o zonas húmedas a lo largo de 40 años.
+
+---
+
+#### **Script 2: Análisis Fenológico con NDVI Multiestacional**
+**Archivo**: `02_ndvi_multiestacional.js`
+
+**Descripción**:  
+Script para crear visualizaciones RGB donde cada color representa la **época del año** en que la vegetación alcanza su máxima actividad fotosintética. Los colores muestran **tiempo**, no tipo de vegetación.
+
+**Dos versiones disponibles**:
+
+##### **Versión Simple (2024)**
+- 📅 Análisis de un **año específico** (configurable)
+- 🍂 4 estaciones: Invierno, Primavera, Verano, Otoño
+- 🎨 Visualización RGB multiestacional
+- ✅ Enmascaramiento por umbral de NDVI (vegetación activa)
+- 📊 Interpretación clara de colores temporales
+
+##### **Versión Decadal (1984-2024)**
+- 📅 Análisis de **4 décadas** alineadas con el script de MNDWI
+- 🔄 Filtrado por meses específicos usando `.calendarRange()`
+- 🎯 Método estadístico configurable (median/max/percentile95)
+- 📈 Comparación de cambios fenológicos históricos
+- 🌍 Detección de impactos del cambio climático en ciclos vegetativos
+
+**Características principales**:
+- ✅ Uso de **composites pre-calculados** de NDVI (cada 32 días)
+- ✅ Función `ee.Image.cat()` para concatenar bandas estacionales
+- ✅ Visualización RGB multiestacional (los colores dependen de qué bandas asignemos a R, G, B)
+- ✅ **Por defecto usamos**: R=Invierno, G=Primavera, B=Verano, interpretándose así:
+  - ⚫ **Negro** = Sin vegetación activa en ningún período
+  - 🔴 **Rojo** = Vegetación activa en INVIERNO
+  - 🟢 **Verde** = Vegetación activa en PRIMAVERA  
+  - 🔵 **Azul** = Vegetación activa en VERANO
+  - 🟡 **Amarillo** = Invierno + Primavera (R+G)
+  - 🩵 **Cian (verde azulado)** = Primavera + Verano (G+B)
+  - 🟣 **Magenta** = Invierno + Verano (R+B)
+  - ⚪ **Blanco** = Activa todo el año (R+G+B)
+- ✅ Enmascaramiento basado en NDVI medio anual
+
+**Conceptos trabajados**:
+- Colecciones pre-procesadas (`LANDSAT/COMPOSITES/C02/T1_L2_32DAY_NDVI`)
+- Filtrado por meses específicos con `.calendarRange()`
+- Concatenación de bandas con `.cat()`
+- Análisis fenológico multitemporal
+- Visualizaciones RGB para representar tiempo
+
+**Aplicación práctica**:  
+Identificación de patrones de crecimiento vegetal, diferenciación de cultivos por fenología, análisis de impactos del cambio climático.
+
+---
+
+### 🔑 Puntos Clave de la Sesión
+
+1. **Series Temporales Largas**: Aprendimos a combinar múltiples misiones satelitales para crear series temporales de 40 años
+2. **Harmonización de Datos**: Normalización de bandas para hacer comparables diferentes sensores
+3. **Análisis Decadal**: División de series largas en períodos significativos
+4. **Reducción Inteligente**: Uso de diferentes métodos estadísticos según el objetivo
+5. **Enmascaramiento Temático**: Mostrar solo información relevante (agua, vegetación activa)
+6. **Visualización del Tiempo**: Uso de color RGB para representar dimensión temporal
+7. **Código Estructurado**: Organización clara con secciones, funciones reutilizables y comentarios
+
+### 💡 Aplicaciones Reales
+
+Estos scripts son la base para:
+- 🌊 **Estudios hidrológicos**: Evolución de embalses, sequías
+- 🌱 **Monitoreo agrícola**: Identificación de cultivos por fenología
+- 🌳 **Evaluación ambiental**: Cambios en cobertura vegetal
+- 🔥 **Gestión de incendios**: Análisis de vegetación seca (NDVI bajo)
+- 🌍 **Cambio climático**: Impactos en ciclos estacionales
 
 ---
 
@@ -381,10 +470,10 @@ var cambio = periodo2.subtract(periodo1);
 ## 🎓 Para Profundizar
 
 ### Preguntas Conceptuales
-- ¿Cuál es la diferencia práctica entre `.median()` y `.mean()`?
-- ¿Por qué `.mosaic()` necesita que las imágenes tengan máscaras?
-- ¿Cuándo usarías `.max()` vs `.qualityMosaic()`?
-- ¿Qué ventajas tiene trabajar con colecciones vs descargar imágenes individuales?
+1. ¿Cuál es la diferencia práctica entre `.median()` y `.mean()`?
+2. ¿Por qué `.mosaic()` necesita que las imágenes tengan máscaras?
+3. ¿Cuándo usarías `.max()` vs `.qualityMosaic()`?
+4. ¿Qué ventajas tiene trabajar con colecciones vs descargar imágenes individuales?
 
 ### Exploración de Datasets
 - ¿Qué diferencias hay entre Landsat 8 y Sentinel-2 en términos de colecciones?
@@ -403,19 +492,37 @@ var cambio = periodo2.subtract(periodo1);
 - [Landsat Collections](https://developers.google.com/earth-engine/datasets/catalog/landsat)
 - [Sentinel-2](https://developers.google.com/earth-engine/datasets/catalog/sentinel-2)
 - [MODIS](https://developers.google.com/earth-engine/datasets/catalog/modis)
-- [Dataset Catalog](https://developers.google.com/earth-engine/datasets/)
+- [Dataset Catalog](https://developers.google.com/earth-engine/datasets)
 
 ## 💡 Consejos Prácticos
 
-1. **Siempre filtra antes de procesar** - Reduce el tiempo de cómputo
-2. **Usa `.median()` para eliminar nubes** - Es más robusto que `.mean()`
-3. **Verifica `.size()` después de filtrar** - Asegúrate de tener suficientes imágenes
-4. **Copia las propiedades importantes** - Usa `.copyProperties()` al mapear
-5. **Ten cuidado con `.mosaic()`** - Solo útil si tus imágenes tienen máscaras de nubes
-6. **Usa `.first()` para pruebas rápidas** - Testea tu código con una imagen antes de aplicar a toda la colección
-7. **Visualiza antes de exportar** - Confirma que tu resultado es correcto
+✅ **Siempre filtra antes de procesar** - Reduce el tiempo de cómputo  
+✅ **Usa `.median()` para eliminar nubes** - Es más robusto que `.mean()`  
+✅ **Verifica `.size()` después de filtrar** - Asegúrate de tener suficientes imágenes  
+✅ **Copia las propiedades importantes** - Usa `.copyProperties()` al mapear  
+✅ **Ten cuidado con `.mosaic()`** - Solo útil si tus imágenes tienen máscaras de nubes  
+✅ **Usa `.first()` para pruebas rápidas** - Testea tu código con una imagen antes de aplicar a toda la colección  
+✅ **Visualiza antes de exportar** - Confirma que tu resultado es correcto  
 
 ## 🚀 Preparación para Próximas Sesiones
+
+### Día 4: Introducción a la API de Python con geemap
+
+En la próxima sesión comenzaremos a trabajar con **Google Earth Engine desde Python** utilizando la biblioteca **geemap**. Este es un curso introductorio donde aprenderemos ambos lenguajes (JavaScript y Python) para trabajar con GEE.
+
+**¿Qué veremos?**
+- Instalación y configuración de geemap
+- Sintaxis básica de Python para GEE
+- Equivalencias entre JavaScript y Python
+- Ventajas de usar notebooks de Jupyter
+- Visualización interactiva con mapas
+
+**Requisitos previos**:
+- Todo lo aprendido en JavaScript es directamente transferible
+- Los conceptos de ImageCollection, filtros y reducción son idénticos
+- Solo cambia la sintaxis, no la lógica
+
+### Más Adelante
 
 Con el conocimiento de colecciones de imágenes, estaremos preparados para:
 - Análisis de cambios temporales
@@ -433,7 +540,3 @@ Con el conocimiento de colecciones de imágenes, estaremos preparados para:
 ⚠️ **El orden de los filtros importa** - Filtra espacialmente primero, luego temporalmente, luego por propiedades
 
 ⚠️ **`.map()` es tu amigo** - Aprende a usarlo bien para aplicar funciones a cada imagen
-
----
-
-*README del Día 3 - Se actualizará con los scripts específicos trabajados en clase*
