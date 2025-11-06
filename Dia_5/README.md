@@ -1019,7 +1019,7 @@ Map
 ## 🎨 Galería de Resultados
 
 ### Análisis Regional de Andalucía
-![Mapa Andalucía](images/gee_2025_day5.png)
+![Mapa Andalucía](../images/gee_2025_day5.png)
 
 Visualización de la región de Andalucía con múltiples capas:
 - Límites administrativos provinciales
@@ -1028,7 +1028,7 @@ Visualización de la región de Andalucía con múltiples capas:
 - Integración de datos vectoriales y raster
 
 ### Agricultura de Precisión: Pivotes de Riego
-![Pivotes](images/irrigationpivots.png)
+![Pivotes](../images/irrigationpivots.png)
 
 Detección automática de sistemas de riego por pivote circular:
 - Análisis de patrones espaciales
@@ -1038,7 +1038,7 @@ Detección automática de sistemas de riego por pivote circular:
 - Aplicación en gestión de recursos hídricos
 
 ### Hidrología: Monitoreo de Lagunas
-![Lagunas](images/mndwi_lagunas.png)
+![Lagunas](../images/mndwi_lagunas.png)
 
 Identificación y análisis de cuerpos de agua:
 - Aplicación del índice MNDWI
@@ -1048,7 +1048,7 @@ Identificación y análisis de cuerpos de agua:
 - Aplicación en gestión de humedales
 
 ### Actividad Marítima: Detección de Embarcaciones
-![Barcos](images/ships.png)
+![Barcos](../images/ships.png)
 
 Monitoreo de tráfico marítimo con teledetección:
 - Procesamiento de imágenes de alta resolución (Sentinel-2)
