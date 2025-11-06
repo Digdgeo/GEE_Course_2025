@@ -1,4 +1,5 @@
 # Día 4 - Introducción a Python y geemap
+Finalmente quedó solo en la introducción a Python y a Google Colab. Mañana veremos Geemap y Ndvi2Gif
 
 ## 🎯 Objetivos del Día
 En este cuarto día damos un paso importante: comenzamos a trabajar con Google Earth Engine desde **Python** utilizando la biblioteca **geemap**. Este es un curso introductorio donde aprendemos ambos lenguajes (JavaScript y Python) para aprovechar lo mejor de cada uno:
